@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OLEDSaver
+namespace OLEDSaver.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -87,6 +87,13 @@ namespace OLEDSaver
                     MainWindowObject.WindowStyle = WindowStyle.None;
                 else
                     MainWindowObject.WindowStyle = WindowStyle.SingleBorderWindow;
+            }
+            if (e.Key == Key.D)
+            {
+                if (MainWindowGrid.Visibility == Visibility.Visible)
+                    MainWindowGrid.Visibility = Visibility.Hidden;
+                else
+                    MainWindowGrid.Visibility = Visibility.Visible;
             }
         }
 
