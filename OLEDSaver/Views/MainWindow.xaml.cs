@@ -20,34 +20,18 @@ namespace OLEDSaver.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        double screenWidth, screenHeight;
-        double currentWidth, currentHeight;
-        double originalTop, originalLeft;
-
-        double originalHeight = 450;
-        double originalWidth = 800;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            screenWidth = SystemParameters.PrimaryScreenWidth;
-            screenHeight = SystemParameters.PrimaryScreenHeight;
+            //_screenWidth = SystemParameters.PrimaryScreenWidth;
+            //_screenHeight = SystemParameters.PrimaryScreenHeight;
 
-            UpdateCurrentWindowSize();
+            //_currentHeight = MainWindowObject.Height;
+            //_currentWidth = MainWindowObject.Width;
 
-            //Lbl1.Content = $"Your resolution is- w: {screenWidth}, h: {screenHeight}";
-        }
-
-        private void UpdateCurrentWindowSize()
-        {
-            currentHeight = MainWindowObject.Height;
-            currentWidth = MainWindowObject.Width;
-        }
-        private void UpdateWindowPosition()
-        {
-            originalTop = MainWindowObject.Top;
-            originalLeft = MainWindowObject.Left;
+            UpdateDisplayInfo();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -55,47 +39,63 @@ namespace OLEDSaver.Views
             if (e.Key == Key.C) Application.Current.Shutdown();
             if (e.Key == Key.F)
             {
-                // Not fullscreen
-                if (currentHeight < screenHeight
-                    && currentWidth < screenWidth)
-                {
-                    MainWindowObject.Height = screenHeight;
-                    MainWindowObject.Width = screenWidth;
-                    UpdateWindowPosition();
-                    MainWindowObject.Top = 0;
-                    MainWindowObject.Left = 0;
-                }
-                else
-                {
-                    MainWindowObject.Height = originalHeight;
-                    MainWindowObject.Width = originalWidth;
-                    MainWindowObject.Top = originalTop;
-                    MainWindowObject.Left = originalLeft;
-                }
-                UpdateCurrentWindowSize();
+                ToggleWindowState();
+                ToggleWindowStyle();
             }
             if (e.Key == Key.M)
             {
-                if (MainWindowObject.WindowState == WindowState.Maximized)
-                    MainWindowObject.WindowState = WindowState.Normal;
-                else
-                    MainWindowObject.WindowState = WindowState.Maximized;
+                ToggleWindowState();
             }
             if (e.Key == Key.S)
             {
-                if (MainWindowObject.WindowStyle == WindowStyle.SingleBorderWindow)
-                    MainWindowObject.WindowStyle = WindowStyle.None;
-                else
-                    MainWindowObject.WindowStyle = WindowStyle.SingleBorderWindow;
+                ToggleWindowStyle();
             }
             if (e.Key == Key.D)
             {
-                if (MainWindowGrid.Visibility == Visibility.Visible)
-                    MainWindowGrid.Visibility = Visibility.Hidden;
-                else
-                    MainWindowGrid.Visibility = Visibility.Visible;
+                ToggleGridVisibility();
             }
         }
 
+        /// <summary>
+        /// Toggles between the Visible and Hidden Visibility state for the <see cref="MainWindowGrid"/>.
+        /// </summary>
+        private void ToggleGridVisibility()
+        {
+            if (MainWindowGrid.Visibility == Visibility.Visible)
+                MainWindowGrid.Visibility = Visibility.Hidden;
+            else
+                MainWindowGrid.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// Toggles between the SingleBorderWindow and None WindowStyle for the <see cref="MainWindowObject"/>.
+        /// </summary>
+        private void ToggleWindowStyle()
+        {
+            if (MainWindowObject.WindowStyle == WindowStyle.SingleBorderWindow)
+                MainWindowObject.WindowStyle = WindowStyle.None;
+            else
+                MainWindowObject.WindowStyle = WindowStyle.SingleBorderWindow;
+        }
+
+        /// <summary>
+        /// Toggles between the Normal and Maximized WindowState for the <see cref="MainWindowObject"/>.
+        /// </summary>
+        private void ToggleWindowState()
+        {
+            if (MainWindowObject.WindowState == WindowState.Maximized)
+                MainWindowObject.WindowState = WindowState.Normal;
+            else
+                MainWindowObject.WindowState = WindowState.Maximized;
+        }
+
+        private void UpdateDisplayInfo()
+        {
+            //WindowHeightLabel.Content = $"Window Height: {_currentHeight}";
+            //WindowWidthLabel.Content = $"Window Width: {_currentWidth}";
+
+            //DisplayHeightLabel.Content = $"Display Height: {_screenHeight}";
+            //DisplayWidthLabel.Content = $"Display Width: {_screenWidth}";
+        }
     }
 }

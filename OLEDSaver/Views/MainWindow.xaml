@@ -4,14 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OLEDSaver"
+        xmlns:vm="clr-namespace:OLEDSaver.ViewModels"
+            d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="OLEDSaver" Height="450" Width="800"
+        Title="OLEDSaver" Height="{Binding WindowHeight, Mode=TwoWay}" Width="{Binding WindowWidth, Mode=TwoWay}"
         WindowStyle="SingleBorderWindow"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
         Background="Black"
         KeyDown="Window_KeyDown"
         Name="MainWindowObject">
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
+    
     <Grid Name="MainWindowGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />
@@ -29,6 +35,15 @@
             <Label Foreground="White">F - Switch between full screen resolution size and current size.</Label>
             <Label Foreground="White">M - Maximize/restore the current window.</Label>
             <Label Foreground="White">S - Shift between the WindowStyles (disables top application bar).</Label>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <StackPanel.DataContext>
+                <vm:DisplayInfoViewModel />
+            </StackPanel.DataContext>
+            <Label Margin="5" FontSize="20" Foreground="AliceBlue" HorizontalAlignment="Center">Display Info</Label>
+            <Label Foreground="White" Content="{Binding WindowResolutionText}" />
+            <Label Foreground="White" Content="{Binding DisplayResolutionText}" />
         </StackPanel>
         
     </Grid>
