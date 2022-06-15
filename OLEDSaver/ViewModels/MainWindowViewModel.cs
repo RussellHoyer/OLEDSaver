@@ -35,6 +35,7 @@ namespace OLEDSaver.ViewModels
         }
 
         #endregion
+
         #region Methods
         private void SetWindowDimensions()
         {
