@@ -8,6 +8,7 @@
             d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="OLED Saver" 
+            d:Width="800" d:Height="450"
             Width="{Binding WindowWidth, Mode=TwoWay}"
             Height="{Binding WindowHeight, Mode=TwoWay}" 
         WindowStyle="{Binding WindowStyle}"
@@ -46,12 +47,11 @@
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="1">
-            <StackPanel.DataContext>
-                <vm:DisplayInfoViewModel />
-            </StackPanel.DataContext>
             <Label Margin="5" FontSize="20" Foreground="AliceBlue" HorizontalAlignment="Center">Display Info</Label>
             <Label Foreground="White" Content="{Binding WindowResolutionText}" />
             <Label Foreground="White" Content="{Binding DisplayResolutionText}" />
+            <Button Command="{Binding UpdateDisplayInfoCommand}" 
+                    Content="Update info" Margin="5" />
         </StackPanel>
 
     </Grid>

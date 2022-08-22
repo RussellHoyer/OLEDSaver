@@ -9,22 +9,29 @@ namespace OLEDSaver.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        #region Private properties
+
+        private double _windowWidth;
+        private double _windowHeight;
+        private string _windowResolutionText;
+        private WindowStyle _windowStyle;
+        private WindowState _windowState;
+        private WindowStartupLocation _windowStartupLocation;
+        private bool _displayGui;
+        private double _displayWidth;
+        private double _displayHeight;
+        private string _displayResolutionText;
+
         WindowConfigSettingsModel windowConfigSettings;
 
         private DelegateCommand _toggleWindowStateCommand;
-        public DelegateCommand ToggleWindowStateCommand { get { return _toggleWindowStateCommand; } }
-
         private DelegateCommand _toggleWindowStyleCommand;
-        public DelegateCommand ToggleWindowStyleCommand { get { return _toggleWindowStyleCommand; } }
-
         private DelegateCommand _toggleGUICommand;
-        public DelegateCommand ToggleGUICommand { get { return _toggleGUICommand; } }
-
         private DelegateCommand _toggleBlackoutCommand;
-        public DelegateCommand ToggleBlackoutCommand { get { return _toggleBlackoutCommand; } }
-
         private DelegateCommand _exitApplicationCommand;
-        public DelegateCommand ExitApplicationCommand { get { return _exitApplicationCommand; } }
+        private DelegateCommand _updateDisplayInfoCommand;
+
+        #endregion
 
         public MainWindowViewModel()
         {
@@ -37,57 +44,80 @@ namespace OLEDSaver.ViewModels
             _toggleWindowStyleCommand = new DelegateCommand(ToggleWindowStyle);
             _toggleGUICommand = new DelegateCommand(ToggleGuiVisibility);
             _toggleBlackoutCommand = new DelegateCommand(OnBlackout);
+            _updateDisplayInfoCommand = new DelegateCommand(OnUpdateDisplayInfo);
 
             // Everything else
             SetWindowDimensions();
+            SetDisplayInfo();
 
             // Defaults
             DisplayGui = true;
             WindowStyle = WindowStyle.SingleBorderWindow;
             WindowState = WindowState.Normal;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            _windowResolutionText = $"Current dimensions: ";
+            _displayResolutionText = $"Display dimensions: ";
         }
-
 
         #region Bindable Properties
 
-        private double _windowWidth;
+        public DelegateCommand ToggleWindowStateCommand { get { return _toggleWindowStateCommand; } }
+        public DelegateCommand ToggleWindowStyleCommand { get { return _toggleWindowStyleCommand; } }
+        public DelegateCommand ToggleGUICommand { get { return _toggleGUICommand; } }
+        public DelegateCommand ToggleBlackoutCommand { get { return _toggleBlackoutCommand; } }
+        public DelegateCommand ExitApplicationCommand { get { return _exitApplicationCommand; } }
+        public DelegateCommand UpdateDisplayInfoCommand { get { return _updateDisplayInfoCommand; } }
+
+
         public double WindowWidth
         {
             get { return _windowWidth; }
             set { _windowWidth = value; RaisePropertyChanged(); }
         }
-        private double _windowHeight;
         public double WindowHeight
         {
             get { return _windowHeight; }
             set { _windowHeight = value; RaisePropertyChanged(); }
         }
-        
-        private WindowStyle _windowStyle;        
+        public string WindowResolutionText
+        {
+            get { return _windowResolutionText; }
+            set { _windowResolutionText = value; RaisePropertyChanged(); }
+        }
         public WindowStyle WindowStyle
         {
             get { return _windowStyle; }
             set { _windowStyle = value; RaisePropertyChanged(); }
         }
-        private WindowState _windowState;
         public WindowState WindowState
         {
             get { return _windowState; }
             set { _windowState = value; RaisePropertyChanged(); }
         }
-        private WindowStartupLocation _windowStartupLocation;
         public WindowStartupLocation WindowStartupLocation
         {
             get { return _windowStartupLocation; }
             set { _windowStartupLocation = value; RaisePropertyChanged(); }
         }
-
-        private bool _displayGui;
         public bool DisplayGui
         {
             get { return _displayGui; }
             set { _displayGui = value; RaisePropertyChanged(); }
+        }
+        public double DisplayWidth
+        {
+            get { return _displayWidth; }
+            set { _displayWidth = value; RaisePropertyChanged(); }
+        }
+        public double DisplayHeight
+        {
+            get { return _displayHeight; }
+            set { _displayHeight = value; RaisePropertyChanged(); }
+        }
+        public string DisplayResolutionText
+        {
+            get { return _displayResolutionText; }
+            set { _displayResolutionText = value; RaisePropertyChanged(); }
         }
 
         #endregion
@@ -141,6 +171,24 @@ namespace OLEDSaver.ViewModels
             else
                 WindowState = WindowState.Maximized;
         }
+
+        private void OnUpdateDisplayInfo()
+        {
+            WindowResolutionText = $"Current dimensions: {WindowWidth}x{WindowHeight}";
+            DisplayResolutionText = $"Display dimensions: {DisplayWidth}x{DisplayHeight}";
+        }
+
+        private void SetDisplayInfo()
+        {
+            DisplayWidth = SystemParameters.PrimaryScreenWidth;
+            DisplayHeight = SystemParameters.PrimaryScreenHeight;
+            WindowWidth = windowConfigSettings.OriginalWidth;
+            WindowHeight = windowConfigSettings.OriginalHeight;
+
+            WindowResolutionText = $"Current dimensions: {WindowWidth}x{WindowHeight}";
+            DisplayResolutionText = $"Display dimensions: {DisplayWidth}x{DisplayHeight}";
+        }
+
         #endregion
     }
 }
