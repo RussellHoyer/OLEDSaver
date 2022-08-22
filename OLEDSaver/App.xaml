@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:OLEDSaver"
              StartupUri="Views/MainWindow.xaml">
     <Application.Resources>
-         
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConv" />
+       
     </Application.Resources>
 </Application>
