@@ -40,7 +40,7 @@
         <StackPanel Grid.Row="0" Grid.Column="0">
             <Label Margin="5" FontSize="20" Foreground="AliceBlue" HorizontalContentAlignment="Center">Key Bindings</Label>
             <Label Foreground="White">C - Close the application.</Label>
-            <Label Foreground="White">D - Toggle UI</Label>
+            <Label Foreground="White">D - Toggle UI visibility</Label>
             <Label Foreground="White">F - Switch between full screen resolution size and current size.</Label>
             <Label Foreground="White">M - Maximize/restore the current window.</Label>
             <Label Foreground="White">S - Shift between the WindowStyles (disables top application bar).</Label>
@@ -48,10 +48,12 @@
 
         <StackPanel Grid.Row="0" Grid.Column="1">
             <Label Margin="5" FontSize="20" Foreground="AliceBlue" HorizontalAlignment="Center">Display Info</Label>
+            <StackPanel Orientation="Horizontal">
+                <Label Foreground="White" Content="Version: " />
+                <Label Foreground="White" Content="{Binding CurrentAppVersion}"/>
+            </StackPanel>
             <Label Foreground="White" Content="{Binding WindowResolutionText}" />
-            <Label Foreground="White" Content="{Binding DisplayResolutionText}" />
-            <Button Command="{Binding UpdateDisplayInfoCommand}" 
-                    Content="Update info" Margin="5" />
+            <Label Foreground="White" Content="{Binding DisplayResolutionText}" />            
         </StackPanel>
 
     </Grid>

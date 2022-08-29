@@ -3,6 +3,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.CodeDom;
+using System.Reflection;
 using System.Windows;
 
 namespace OLEDSaver.ViewModels
@@ -68,6 +69,7 @@ namespace OLEDSaver.ViewModels
         public DelegateCommand ExitApplicationCommand { get { return _exitApplicationCommand; } }
         public DelegateCommand UpdateDisplayInfoCommand { get { return _updateDisplayInfoCommand; } }
 
+        public string CurrentAppVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public double WindowWidth
         {
