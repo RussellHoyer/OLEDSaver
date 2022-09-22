@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OLEDSaver.Providers;
 using OLEDSaver.ViewModels;
 using OLEDSaver.Views;
 using System;
@@ -32,6 +33,9 @@ namespace OLEDSaver
 
             // ViewModels
             services.AddTransient<MainWindowViewModel>();
+
+            // Services
+            services.AddTransient<ConfigSettingsProvider>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

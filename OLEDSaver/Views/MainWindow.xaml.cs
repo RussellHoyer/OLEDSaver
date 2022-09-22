@@ -27,7 +27,7 @@ namespace OLEDSaver.Views
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //TODO: Write code to load saved settings
+
         }
     }
 }

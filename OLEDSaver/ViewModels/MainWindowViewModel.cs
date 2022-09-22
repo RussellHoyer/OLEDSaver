@@ -1,9 +1,13 @@
 ﻿using OLEDSaver.Models;
+using OLEDSaver.Providers;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.CodeDom;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 using System.Windows;
 
 namespace OLEDSaver.ViewModels
@@ -14,6 +18,8 @@ namespace OLEDSaver.ViewModels
 
         private double _windowWidth;
         private double _windowHeight;
+        private double _windowTop;
+        private double _windowLeft;
         private string _windowResolutionText;
         private WindowStyle _windowStyle;
         private WindowState _windowState;
@@ -22,8 +28,10 @@ namespace OLEDSaver.ViewModels
         private double _displayWidth;
         private double _displayHeight;
         private string _displayResolutionText;
+        private string _configSettingsFilepath;
 
-        WindowConfigSettingsModel windowConfigSettings;
+        WindowConfigSettingsModel _windowConfigSettings;
+        ConfigSettingsProvider _configSettingsProvider;
 
         private DelegateCommand _toggleWindowStateCommand;
         private DelegateCommand _toggleWindowStyleCommand;
@@ -31,13 +39,18 @@ namespace OLEDSaver.ViewModels
         private DelegateCommand _toggleBlackoutCommand;
         private DelegateCommand _exitApplicationCommand;
         private DelegateCommand _updateDisplayInfoCommand;
+        private DelegateCommand _loadConfigSettingsCommand;
+        private DelegateCommand _saveConfigSettingsCommand;
 
         #endregion
 
         public MainWindowViewModel()
         {
             // property init
-            windowConfigSettings = new WindowConfigSettingsModel();
+            _windowConfigSettings = new WindowConfigSettingsModel();
+            _configSettingsProvider = new ConfigSettingsProvider();
+            _configSettingsFilepath = Path.Combine(Environment.CurrentDirectory,
+                "OLEDSaverConfig.json");
 
             // command init
             _exitApplicationCommand = new DelegateCommand(OnExitApplication);
@@ -46,6 +59,8 @@ namespace OLEDSaver.ViewModels
             _toggleGUICommand = new DelegateCommand(ToggleGuiVisibility);
             _toggleBlackoutCommand = new DelegateCommand(OnBlackout);
             _updateDisplayInfoCommand = new DelegateCommand(OnUpdateDisplayInfo);
+            _loadConfigSettingsCommand = new DelegateCommand(OnLoadConfigSettings);
+            _saveConfigSettingsCommand = new DelegateCommand(OnSaveConfigSettings);
 
             // Everything else
             SetWindowDimensions();
@@ -68,6 +83,8 @@ namespace OLEDSaver.ViewModels
         public DelegateCommand ToggleBlackoutCommand { get { return _toggleBlackoutCommand; } }
         public DelegateCommand ExitApplicationCommand { get { return _exitApplicationCommand; } }
         public DelegateCommand UpdateDisplayInfoCommand { get { return _updateDisplayInfoCommand; } }
+        public DelegateCommand LoadConfigSettingsCommand { get { return _loadConfigSettingsCommand; } }
+        public DelegateCommand SaveConfigSettingsCommand { get { return _saveConfigSettingsCommand; } }
 
         public string CurrentAppVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
@@ -80,6 +97,16 @@ namespace OLEDSaver.ViewModels
         {
             get { return _windowHeight; }
             set { _windowHeight = value; RaisePropertyChanged(); }
+        }
+        public double WindowTop
+        { 
+            get { return _windowTop; }
+            set { _windowTop = value; RaisePropertyChanged(); }
+        }
+        public double WindowLeft
+        {
+            get { return _windowLeft; }
+            set { _windowLeft = value; RaisePropertyChanged(); }
         }
         public string WindowResolutionText
         {
@@ -128,13 +155,69 @@ namespace OLEDSaver.ViewModels
 
         private void SetWindowDimensions()
         {
-            WindowWidth = windowConfigSettings.OriginalWidth;
-            WindowHeight = windowConfigSettings.OriginalHeight;
+            WindowWidth = _windowConfigSettings.OriginalWidth;
+            WindowHeight = _windowConfigSettings.OriginalHeight;
         }
+        bool _blackoutSwitch { get; set; } = false;
+        Dictionary<string, object> _displayPositions = new();
         private void OnBlackout()
         {
-            ToggleWindowState();
-            ToggleWindowStyle();
+            if (_blackoutSwitch)
+            {
+                ToggleWindowState();
+                ToggleWindowStyle();
+                RestoreWindowPositions();
+                _blackoutSwitch = false;
+            }
+            else
+            {
+                SaveWindowPositions();
+                ToggleWindowState();
+                ToggleWindowStyle();
+                _blackoutSwitch = true;
+            }
+        }
+
+        private void RestoreWindowPositions()
+        {
+            if (_displayPositions == null) return;
+
+            if (_displayPositions.ContainsKey("windowLeft"))
+                WindowLeft = (double)_displayPositions["windowLeft"];
+
+            if (_displayPositions.ContainsKey("windowTop"))
+                WindowTop = (double)_displayPositions["windowTop"];
+
+            if (_displayPositions.ContainsKey("windowHeight"))
+                WindowHeight = (double)_displayPositions["windowHeight"];
+
+            if (_displayPositions.ContainsKey("windowWidth"))
+                WindowWidth = (double)_displayPositions["windowWidth"];
+        }
+
+        private void SaveWindowPositions()
+        {
+            _displayPositions ??= new();
+
+            if (_displayPositions.ContainsKey("windowLeft"))
+                _displayPositions["windowLeft"] = WindowLeft;
+            else
+                _displayPositions.Add("windowLeft", WindowLeft);
+
+            if (_displayPositions.ContainsKey("windowTop"))
+                _displayPositions["windowTop"] = WindowTop;
+            else
+                _displayPositions.Add("windowTop", WindowTop);
+
+            if (_displayPositions.ContainsKey("windowHeight"))
+                _displayPositions["windowHeight"] = WindowHeight;
+            else
+                _displayPositions.Add("windowHeight", WindowHeight);
+
+            if (_displayPositions.ContainsKey("windowWidth"))
+                _displayPositions["windowWidth"] = WindowWidth;
+            else
+                _displayPositions.Add("windowWidth", WindowWidth);
         }
 
         private void OnExitApplication()
@@ -178,17 +261,30 @@ namespace OLEDSaver.ViewModels
         {
             WindowResolutionText = $"Current dimensions: {WindowWidth}x{WindowHeight}";
             DisplayResolutionText = $"Display dimensions: {DisplayWidth}x{DisplayHeight}";
+            //SaveWindowPositions();
         }
 
         private void SetDisplayInfo()
         {
             DisplayWidth = SystemParameters.PrimaryScreenWidth;
             DisplayHeight = SystemParameters.PrimaryScreenHeight;
-            WindowWidth = windowConfigSettings.OriginalWidth;
-            WindowHeight = windowConfigSettings.OriginalHeight;
+            WindowWidth = _windowConfigSettings.OriginalWidth;
+            WindowHeight = _windowConfigSettings.OriginalHeight;
 
             WindowResolutionText = $"Current dimensions: {WindowWidth}x{WindowHeight}";
             DisplayResolutionText = $"Display dimensions: {DisplayWidth}x{DisplayHeight}";
+        }
+
+        private void OnSaveConfigSettings()
+        {
+            if (_windowConfigSettings != null)
+                _configSettingsProvider.SaveConfigSettings(_configSettingsFilepath, _windowConfigSettings);
+        }
+
+        private void OnLoadConfigSettings()
+        {
+            _configSettingsProvider.LoadConfigSettings(_configSettingsFilepath);
+            _windowConfigSettings = _configSettingsProvider.GetWindowConfigSettings();
         }
 
         #endregion

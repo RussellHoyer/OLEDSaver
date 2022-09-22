@@ -11,6 +11,8 @@
             d:Width="800" d:Height="450"
             Width="{Binding WindowWidth, Mode=TwoWay}"
             Height="{Binding WindowHeight, Mode=TwoWay}" 
+            Top="{Binding WindowTop, Mode=TwoWay}"
+            Left="{Binding WindowLeft, Mode=TwoWay}"
         WindowStyle="{Binding WindowStyle}"
         WindowState="{Binding WindowState}"
         WindowStartupLocation="CenterScreen"
@@ -52,8 +54,23 @@
                 <Label Foreground="White" Content="Version: " />
                 <Label Foreground="White" Content="{Binding CurrentAppVersion}"/>
             </StackPanel>
-            <Label Foreground="White" Content="{Binding WindowResolutionText}" />
-            <Label Foreground="White" Content="{Binding DisplayResolutionText}" />            
+            <Label Foreground="White" Content="{Binding DisplayResolutionText}" />
+            <StackPanel Orientation="Horizontal">
+                <Label Foreground="White" Content="Height: " />
+                <Label Foreground="White" Content="{Binding WindowHeight}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Foreground="White" Content="Width: " />
+                <Label Foreground="White" Content="{Binding WindowWidth}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Foreground="White" Content="Top: " />
+                <Label Foreground="White" Content="{Binding WindowTop}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Foreground="White" Content="Left " />
+                <Label Foreground="White" Content="{Binding WindowLeft}" />
+            </StackPanel>
         </StackPanel>
 
     </Grid>
