@@ -31,10 +31,13 @@
 
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="Toggle UI visibility" Command="{Binding ToggleGUICommand}" />
-            <MenuItem Header="Toggle Blackout" Command="{Binding ToggleBlackoutCommand}" />
-            <MenuItem Header="Toggle maximize/restore" Command="{Binding ToggleWindowStateCommand}" />
-            <MenuItem Header="Toggle application bar" Command="{Binding ToggleWindowStyleCommand}"/>
+            <MenuItem Header="Maximize/Restore Window" Command="{Binding ToggleWindowStateCommand}" />
+            <MenuItem Header="Toggle Application Bar" Command="{Binding ToggleWindowStyleCommand}"
+                      IsChecked="{Binding AppBarVisible}" />
+            <MenuItem Header="Toggle Blackout" Command="{Binding ToggleBlackoutCommand}"
+                      IsChecked="{Binding BlackoutSwitch}" />
+            <MenuItem Header="Toggle UI visibility" Command="{Binding ToggleGUICommand}"
+                      IsChecked="{Binding DisplayGui}" />            
             <Separator />
             <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
         </ContextMenu>

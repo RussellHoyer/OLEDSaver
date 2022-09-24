@@ -29,6 +29,8 @@ namespace OLEDSaver.ViewModels
         private double _displayHeight;
         private string _displayResolutionText;
         private string _configSettingsFilepath;
+        private bool _appBarVisible;
+        bool _blackoutSwitch;
 
         WindowConfigSettingsModel _windowConfigSettings;
         ConfigSettingsProvider _configSettingsProvider;
@@ -68,6 +70,8 @@ namespace OLEDSaver.ViewModels
 
             // Defaults
             DisplayGui = true;
+            BlackoutSwitch = false;
+            AppBarVisible = true;
             WindowStyle = WindowStyle.SingleBorderWindow;
             WindowState = WindowState.Normal;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -118,6 +122,13 @@ namespace OLEDSaver.ViewModels
             get { return _windowStyle; }
             set { _windowStyle = value; RaisePropertyChanged(); }
         }
+
+        public bool AppBarVisible 
+        { 
+            get { return _appBarVisible; }
+            set { _appBarVisible = value; RaisePropertyChanged(); }
+        }
+
         public WindowState WindowState
         {
             get { return _windowState; }
@@ -158,23 +169,32 @@ namespace OLEDSaver.ViewModels
             WindowWidth = _windowConfigSettings.OriginalWidth;
             WindowHeight = _windowConfigSettings.OriginalHeight;
         }
-        bool _blackoutSwitch { get; set; } = false;
+        public bool BlackoutSwitch 
+        { 
+            get { return _blackoutSwitch; }
+            set { _blackoutSwitch = value; RaisePropertyChanged(); }
+        }
         Dictionary<string, object> _displayPositions = new();
+
         private void OnBlackout()
         {
             if (_blackoutSwitch)
             {
-                ToggleWindowState();
-                ToggleWindowStyle();
+                WindowState = WindowState.Normal;
+                WindowStyle = WindowStyle.SingleBorderWindow;
                 RestoreWindowPositions();
-                _blackoutSwitch = false;
+                AppBarVisible = true;
+                DisplayGui = true;
+                BlackoutSwitch = false;
             }
             else
             {
                 SaveWindowPositions();
-                ToggleWindowState();
-                ToggleWindowStyle();
-                _blackoutSwitch = true;
+                WindowState = WindowState.Maximized;
+                WindowStyle = WindowStyle.None;
+                AppBarVisible = false;
+                DisplayGui = false;
+                BlackoutSwitch = true;
             }
         }
 
@@ -241,9 +261,15 @@ namespace OLEDSaver.ViewModels
         private void ToggleWindowStyle()
         {
             if (WindowStyle == WindowStyle.SingleBorderWindow)
+            {
                 WindowStyle = WindowStyle.None;
+                AppBarVisible = false;
+            }
             else
+            {
                 WindowStyle = WindowStyle.SingleBorderWindow;
+                AppBarVisible = true;
+            }
         }
 
         /// <summary>
